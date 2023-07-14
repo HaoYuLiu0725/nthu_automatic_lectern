@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NTHU Automatic Lectern</title>
+</head>
+<body>
+    <h1>NTHU Automatic Lectern</h1>
+    <h2>AMR 連線狀態: <span id="amr_connection"></span></h2>
+    Date & Time: <span id="time_span"></span><p></p>
+    <form method="post" action="/">
+        <input type="submit" value="前往舞台中央(center)" name="goToLocation_center"/>
+        Result: <span id="goToCenter_result"></span><p></p>
+        <input type="submit" value="前往等待區(standby)" name="goToLocation_standby"/>
+        Result: <span id="goToStandby_result"></span><p></p>
+        <input type="submit" value="前往側邊(side)" name="goToLocation_side"/>
+        Result: <span id="goToSide_result"></span><p></p>
+        <input type="submit" value="開啟電子剎車(MtrBrake)" name="enableMtrBrake"/>
+        Result: <span id="mtrBrake_result"></span><p></p>
+        <label for="target_height">目標身高:</label>
+	    <input type="text" id="targetheight" name="target_height" placeholder="(cm)" size="10">
+        <input type="submit" value="調整桌面高度" name="changeHeight"/><p></p>
+        Now Speaker's Height: <span id="speaker_height"></span> (cm)<p></p>
+        Now Table Height: <span id="table_height"></span> (cm) [100~123 cm]<p></p>
+
+        <label for="name_data">輸入講者 <span id="speaker_index"></span> 名字與身高:</label><p></p>
+	    <input type="text" id="nameData" name="name_data" placeholder="講者名字" size="10">
+        <input type="text" id="heightData" name="height_data" placeholder="講者身高(cm)" size="10">
+        <input type="submit" value="儲存" name="storeData"/>
+        <input type="text" id="indexData" name="index_data" placeholder="講者編號" size="10">
+        <input type="submit" value="修改" name="editData"/><p></p>
+        講者名字與身高列表:<p></p>
+        講者1: 名字: <span id="speaker1_name"></span>, 身高: <span id="speaker1_height"></span>
+        <input type="submit" value="切換講者1" name="changeSpeaker1"/><p></p>
+        講者2: 名字: <span id="speaker2_name"></span>, 身高: <span id="speaker2_height"></span>
+        <input type="submit" value="切換講者2" name="changeSpeaker2"/><p></p>
+        講者3: 名字: <span id="speaker3_name"></span>, 身高: <span id="speaker3_height"></span>
+        <input type="submit" value="切換講者3" name="changeSpeaker3"/><p></p>
+        講者4: 名字: <span id="speaker4_name"></span>, 身高: <span id="speaker4_height"></span>
+        <input type="submit" value="切換講者4" name="changeSpeaker4"/><p></p>
+        講者5: 名字: <span id="speaker5_name"></span>, 身高: <span id="speaker5_height"></span>
+        <input type="submit" value="切換講者5" name="changeSpeaker5"/><p></p>
+        講者6: 名字: <span id="speaker6_name"></span>, 身高: <span id="speaker6_height"></span>
+        <input type="submit" value="切換講者6" name="changeSpeaker6"/><p></p>
+        講者7: 名字: <span id="speaker7_name"></span>, 身高: <span id="speaker7_height"></span>
+        <input type="submit" value="切換講者7" name="changeSpeaker7"/><p></p>
+        講者8: 名字: <span id="speaker8_name"></span>, 身高: <span id="speaker8_height"></span>
+        <input type="submit" value="切換講者8" name="changeSpeaker8"/><p></p>
+
+        <input type="submit" value="取得電池狀態" name="getBatteryStatus"/>
+        Battery Level: <span id="battery_level"></span>, Charging: <span id="charging"></span><p></p>
+        <input type="submit" value="取得目前位置及方向" name="getRobotStatus_location"/><p></p>
+        Location: X: <span id="location_X"></span>, Y: <span id="location_Y"></span>, 
+        Orientation: <span id="location_orientation"></span> <p></p>
+        <input type="submit" value="取得目前 SLAM 模式" name="getRobotStatus_slam_mode"/><p></p>
+        Map Name: <span id="map_name"></span>, SLAM Mode: <span id="slam_mode"></span><p></p>
+        <input type="submit" value="取得目前電源管理模式" name="getRobotStatus_power_mode"/>
+        Power Mode: <span id="power_mode"></span>
+        <input type="submit" value="喚醒AMR" name="awakeRobot"/><p></p>
+        <input type="submit" value="取得目前電子剎車開關" name="getRobotStatus_mtr_brake"/>
+        Motor Brake: <span id="mtr_brake"></span>
+        <input type="submit" value="取得目前LED顯示設定值" name="getRobotStatus_led_setting"/><p></p>
+        control: <span id="control"></span>, frontR: <span id="frontR"></span>, frontG: <span id="frontG"></span>, frontB: <span id="frontB"></span>,<p></p>
+        frontBri: <span id="frontBri"></span>, frontMode: <span id="frontMode"></span>, rearMode: <span id="rearMode"></span><p></p>
+        <input type="submit" value="LED_default" name="setLight_default"/>
+        <input type="submit" value="LED_customer" name="setLight_customer"/>
+        <input type="submit" value="LED_purple" name="setLight_purple"/><p></p>
+        Result: <span id="setLight_result"></span><p></p>
+    </form>
+
+    <script type="text/javascript">
+        var time_span = document.getElementById("time_span");
+        var amr_connection = document.getElementById("amr_connection");
+        var goToCenter_result = document.getElementById("goToCenter_result");
+        var goToStandby_result = document.getElementById("goToStandby_result");
+        var goToSide_result = document.getElementById("goToSide_result");
+        var mtrBrake_result = document.getElementById("mtrBrake_result");
+        var setLight_result = document.getElementById("setLight_result");
+        var speaker_height = document.getElementById("speaker_height");
+        var table_height = document.getElementById("table_height");
+        // var battery_status = document.getElementById("battery_status");
+        var battery_level = document.getElementById("battery_level");
+        var charging = document.getElementById("charging");
+        // var status_location = document.getElementById("status_location");
+        var location_X = document.getElementById("location_X");
+        var location_Y = document.getElementById("location_Y");
+        var location_orientation = document.getElementById("location_orientation");
+        // var status_slam_mode = document.getElementById("status_slam_mode");
+        var map_name = document.getElementById("map_name");
+        var slam_mode = document.getElementById("slam_mode");
+        // var status_power_mode = document.getElementById("status_power_mode");
+        var power_mode = document.getElementById("power_mode");
+        // var status_mtr_brake = document.getElementById("status_mtr_brake");
+        var mtr_brake = document.getElementById("mtr_brake");
+        // var led_setting = document.getElementById("led_setting");
+        var control = document.getElementById("control");
+        var frontR = document.getElementById("frontR");
+        var frontG = document.getElementById("frontG");
+        var frontB = document.getElementById("frontB");
+        var frontBri = document.getElementById("frontBri");
+        var frontMode = document.getElementById("frontMode");
+        var rearMode = document.getElementById("rearMode");
+        // 講者名字與身高列表
+        var speaker_index = document.getElementById("speaker_index");
+        var speaker1_name = document.getElementById("speaker1_name");
+        var speaker1_height = document.getElementById("speaker1_height");
+        var speaker2_name = document.getElementById("speaker2_name");
+        var speaker2_height = document.getElementById("speaker2_height");
+        var speaker3_name = document.getElementById("speaker3_name");
+        var speaker3_height = document.getElementById("speaker3_height");
+        var speaker4_name = document.getElementById("speaker4_name");
+        var speaker4_height = document.getElementById("speaker4_height");
+        var speaker5_name = document.getElementById("speaker5_name");
+        var speaker5_height = document.getElementById("speaker5_height");
+        var speaker6_name = document.getElementById("speaker6_name");
+        var speaker6_height = document.getElementById("speaker6_height");
+        var speaker7_name = document.getElementById("speaker7_name");
+        var speaker7_height = document.getElementById("speaker7_height");
+        var speaker8_name = document.getElementById("speaker8_name");
+        var speaker8_height = document.getElementById("speaker8_height");
+        
+        function updater() {
+            fetch('/data/json').then(response => response.json())
+            .then((data) => {
+                time_span.innerHTML = data.time_span;
+                amr_connection.innerHTML = data.amr_connection;
+                goToCenter_result.innerHTML = data.goToCenter_result;
+                goToStandby_result.innerHTML = data.goToStandby_result;
+                goToSide_result.innerHTML = data.goToSide_result;
+                mtrBrake_result.innerHTML = data.mtrBrake_result;
+                setLight_result.innerHTML = data.setLight_result;
+                speaker_height.innerHTML = data.speaker_height;
+                table_height.innerHTML = data.table_height;
+                // battery_status.innerHTML = data.battery_status;
+                battery_level.innerHTML = data.battery_level;
+                charging.innerHTML = data.charging;
+                // status_location.innerHTML = data.status_location;
+                location_X.innerHTML = data.location_X;
+                location_Y.innerHTML = data.location_Y;
+                location_orientation.innerHTML = data.location_orientation;
+                // status_slam_mode.innerHTML = data.status_slam_mode;
+                map_name.innerHTML = data.map_name;
+                slam_mode.innerHTML = data.slam_mode;
+                // status_power_mode.innerHTML = data.status_power_mode;
+                power_mode.innerHTML = data.power_mode;
+                // status_mtr_brake.innerHTML = data.status_mtr_brake;
+                mtr_brake.innerHTML = data.mtr_brake;
+                // led_setting.innerHTML = data.status_led_setting;
+                control.innerHTML = data.control;
+                frontR.innerHTML = data.frontR;
+                frontG.innerHTML = data.frontG;
+                frontB.innerHTML = data.frontB;
+                frontBri.innerHTML = data.frontBri;
+                frontMode.innerHTML = data.frontMode;
+                rearMode.innerHTML = data.rearMode;
+                // 講者名字與身高列表
+                speaker_index.innerHTML = data.speaker_index;
+                speaker1_name.innerHTML = data.speaker1_name;
+                speaker1_height.innerHTML = data.speaker1_height;
+                speaker2_name.innerHTML = data.speaker2_name;
+                speaker2_height.innerHTML = data.speaker2_height;
+                speaker3_name.innerHTML = data.speaker3_name;
+                speaker3_height.innerHTML = data.speaker3_height;
+                speaker4_name.innerHTML = data.speaker4_name;
+                speaker4_height.innerHTML = data.speaker4_height;
+                speaker5_name.innerHTML = data.speaker5_name;
+                speaker5_height.innerHTML = data.speaker5_height;
+                speaker6_name.innerHTML = data.speaker6_name;
+                speaker6_height.innerHTML = data.speaker6_height;
+                speaker7_name.innerHTML = data.speaker7_name;
+                speaker7_height.innerHTML = data.speaker7_height;
+                speaker8_name.innerHTML = data.speaker8_name;
+                speaker8_height.innerHTML = data.speaker8_height;
+            })
+        }
+        
+        setInterval(updater, 1000);  // run `updater()` every 1000ms (1s)
+    </script>
+</body>
+</html>

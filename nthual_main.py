@@ -154,13 +154,17 @@ class NTHU_AL():
 
     # MAIN FUNCTION #
     def main(self):
+        # connect to arduino
         self.arduino = serial.Serial(self.arduino_port, self.arduino_baudrate, timeout=1)
         self.arduino.reset_input_buffer()
+        
+        # connect to mqtt
         self.main_client.on_connect = self.mqtt_on_connect
         self.main_client.on_message = self.mqtt_on_message
         self.main_client.connect(self.MQTT_BROKER_URL, self.MQTT_BROKER_PORT)
         self.main_client.loop_start()
 
+        # connect to AMR
         if self.AMR.connect(3) == 1: # 連線成功
             print(datetime.now(), " AMR Connected !!!")
             self.amr_connection = "已成功連線"
@@ -168,10 +172,10 @@ class NTHU_AL():
         else:
             self.amr_connected = False
             print(datetime.now(), " AMR Connection Failed ...")
-
-        self.mqtt_publish()
         
-        while True:
+        self.mqtt_publish() # publish once to check mqtt communication
+        
+        while True: # main loop
             if self.have_message:
                 command = self.message.get("command")
                 para = self.message.get("para")

@@ -61,7 +61,7 @@ class NTHU_AL():
         except:
             sys.stderr.write(f"\n[ERROR]: failed to read file: '{self.file_path}'!\n")
             
-    # mqtt function for communication
+    # function for mqtt communication
     def mqtt_on_connect(self, client, userdata, flags, rc):
         client.subscribe("/from_website")
 
@@ -94,7 +94,13 @@ class NTHU_AL():
         }
         self.main_client.publish("/from_main", json.dumps(payload))
         self.have_message = False
-    
+        
+    # function for arduino communication (change height)
+    def changeHeight(self, height: float):
+        self.arduino.write(str.encode(height + "\n"))
+        self.have_message = False
+        
+    # function for AMR communication
     def getBatteryStatus(self):
         if self.amr_connected:
             self.battery_status = self.AMR.getBatteryStatus()
@@ -113,10 +119,6 @@ class NTHU_AL():
             elif para == "led_setting":
                 self.status_led_setting = self.AMR.getRobotStatus("led_setting")
         self.mqtt_publish()
-
-    def changeHeight(self, height: float):
-        self.arduino.write(str.encode(height + "\n"))
-        self.have_message = False
     
     def goToLocation(self, locationName: str):
         if self.amr_connected:
@@ -150,6 +152,7 @@ class NTHU_AL():
             self.mtrBrake_result = self.AMR.MtrBrake("On")
         self.mqtt_publish()
 
+    # MAIN FUNCTION #
     def main(self):
         self.arduino = serial.Serial(self.arduino_port, self.arduino_baudrate, timeout=1)
         self.arduino.reset_input_buffer()

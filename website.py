@@ -7,7 +7,7 @@ from nthual_main import NTHU_AL
 import json
 
 robot = NTHU_AL()
-app = Flask(__name__)
+app = Flask(__name__) # Use Flask to create and handle website
 app.config['MQTT_BROKER_URL'] = robot.MQTT_BROKER_URL
 app.config['MQTT_BROKER_PORT'] = robot.MQTT_BROKER_PORT
 app.config['MQTT_REFRESH_TIME'] = 1.0  
@@ -30,6 +30,7 @@ def store_data(speaker_name, speaker_height, index):
 def mqtt_publish(**messageDict):
         mqtt.publish("/from_website", json.dumps(messageDict))
 
+# Main function for website, handle button press -------------------------------------------
 @app.route("/", methods=['GET', 'POST'])
 def index():
     if request.method == 'POST':
@@ -174,7 +175,8 @@ def data_json():
         "speaker8_height": robot.speakers_datalist[7].get("height"),
     }
     return json.dumps(payload)
-# ------------------------------------------------------------------------------------------
+
+# MQTT FUNCTION------------------------------------------------------------------------------------------
 @mqtt.on_connect()
 def handle_connect(client, userdata, flags, rc):
     mqtt.subscribe('/from_main')

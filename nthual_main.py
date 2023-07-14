@@ -60,11 +60,12 @@ class NTHU_AL():
             sys.stderr.write(f"\n[ERROR]: failed to read file: '{self.file_path}'!\n")
         except:
             sys.stderr.write(f"\n[ERROR]: failed to read file: '{self.file_path}'!\n")
-    
+            
+    # mqtt function for communication
     def mqtt_on_connect(self, client, userdata, flags, rc):
         client.subscribe("/from_website")
 
-    def mqtt_on_message(self, client, userdata, msg):
+    def mqtt_on_message(self, client, userdata, msg): # trigger when receive message from website.py
         self.have_message = True
         #print(f"[{msg.topic}]: {msg.payload}")
         payload = msg.payload.decode('utf-8')
@@ -74,7 +75,7 @@ class NTHU_AL():
         print("para :", self.message.get("para"))
         print("------------------------------")
 
-    def mqtt_publish(self):
+    def mqtt_publish(self): # publish message (from nthal_main.py to website.py)
         payload = {
             "amr_connection" : self.amr_connection,
             "amr_connected" : self.amr_connected,

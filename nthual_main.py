@@ -10,11 +10,13 @@ import sys
 class NTHU_AL():
     def __init__(self):
         self.AMR = AMR()
+        # setting for mqtt communication
         self.main_client = mqtt.Client()
         self.MQTT_BROKER_URL = "localhost"
         self.MQTT_BROKER_PORT = 1883
         self.message = {}
         self.have_message = False
+        # serial communication with arduino
         self.arduino = ""
         #self.arduino_port = "/dev/ttyUSB0"
         self.arduino_port = "/dev/ttyACM0"
@@ -36,12 +38,12 @@ class NTHU_AL():
         self.goToSide_result = {"Result": "None"}
         self.setLight_result = {"Result": "None"}
         self.mtrBrake_result = {"Result": "None"}
-        self.speakers_num = 8
+        self.speakers_num = 8 # change here for more speakers
         self.speaker_index = 0
         self.speakers_datalist = [{"name": "None", "height": 0.0} for _ in range(self.speakers_num)]
         self.file_path = "/home/NTHU-AL/nthu_automatic_lectern/speaker_height.txt"
     
-    def read_file(self):
+    def read_file(self): # read name-height pair from speaker_height.txt
         try:
             with open(self.file_path, 'r') as fh:
                 for index, line in enumerate(fh.readlines()):
